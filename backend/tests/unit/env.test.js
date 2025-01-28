@@ -1,4 +1,4 @@
-const { getEnvVariable } = require ('../../config/config.js');
+const { getEnvVariable } = require ('../../config/env.js');
 
 describe('Environment Variables', () => {
 
