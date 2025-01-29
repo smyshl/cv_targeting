@@ -1,5 +1,3 @@
-console.log('хуй');
-
 const cvTextElement = document.getElementById('cvText');
 const jobDescriptionTextElement = document.getElementById('jobDescriptionText');
 const startTargetingButton = document.getElementById('startTargeting');
@@ -18,6 +16,8 @@ startTargetingButton.addEventListener('click', async (e) => {
         return;
     };
 
+    targetedCvTextElement.value = "Targeting your CV..."
+
     const chatResponse = await getChatResponse(cvText, jobDescriptionText);
 
     targetedCvTextElement.value = JSON.stringify(chatResponse);
@@ -33,11 +33,11 @@ async function getChatResponse(cvText, jobDescriptionText) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ cv: cvText, job: jobDescriptionText})
+            body: JSON.stringify({ cvText, jobDescriptionText})
         });
 
         if(!response.ok){
-            throw new Error("Response not OK:" + response.status);
+            return "Response is not OK:" + response.status;
         };
 
         return await response.json();

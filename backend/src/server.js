@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { getEnvVariable } = require('../config/env.js');
 const logger = require('../config/logger.js');
 const routes = require('../routes');
@@ -16,6 +17,8 @@ app.use(cors({
     //   exposedHeaders: ['x-access-token'],
       })
     );
+
+app.use(express.static(path.join(__dirname, '../../frontend/public')));  
 
 app.use('/api', routes);
 
