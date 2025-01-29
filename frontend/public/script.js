@@ -8,9 +8,6 @@ startTargetingButton.addEventListener('click', async (e) => {
     const cvText = cvTextElement.value;
     const jobDescriptionText = jobDescriptionTextElement.value;
 
-    console.log(cvText, jobDescriptionText);
-    
-
     if( !(cvText && jobDescriptionText)) {
         alert(`Please fill your CV and job description fields ${cvText}`);
         return;
@@ -20,7 +17,7 @@ startTargetingButton.addEventListener('click', async (e) => {
 
     const chatResponse = await getChatResponse(cvText, jobDescriptionText);
 
-    targetedCvTextElement.value = JSON.stringify(chatResponse);
+    targetedCvTextElement.value = chatResponse.response;
 
 })
 

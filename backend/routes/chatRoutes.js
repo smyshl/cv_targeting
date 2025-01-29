@@ -1,9 +1,10 @@
 const express = require('express');
+const { getOpenaiResponseFromPrompt } = require('../controllers/openaiChatController.js');
 
 
 const router = express.Router();
 
-router.post('/', ((req, res) => console.log('request received', req)))
+router.post('/', getOpenaiResponseFromPrompt);
 
 
 module.exports = router;
