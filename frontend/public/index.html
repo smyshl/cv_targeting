@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <script src="script.js" async defer></script>
+    <script src="script.js" type="module" async defer></script>
     <title>CV targeting</title>
 </head>
 <body>
@@ -15,8 +15,9 @@
     <main style="text-align: center;">
 
         <section id="cvSection">
-            <label for="cvText">Your CV:</label><br>
+            <label for="cvText">Your CV:    </label><input type="file" id="uploadCvPdf" accept="application/pdf"><br>
             <textarea id="cvText" name="cvText" rows="15" cols="100"></textarea>
+            
         </section>
 
         <section id="jobDescriptionSection">

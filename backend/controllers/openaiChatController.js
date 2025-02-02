@@ -9,13 +9,9 @@ function formatString(templateString, values) {
 async function getOpenaiResponseFromPrompt(req, res) {
 
     const values = {... req.body};
-    console.log('values:', values);
     const templateString = openaiChatConfigJson.userPrompt;
 
     const prompt = formatString(templateString, values);
-
-    console.log('prompt:', prompt);
-
 
     try {
         const response = await generateOpenaiChatResponse(prompt);
@@ -33,7 +29,8 @@ async function generateOpenaiChatResponse(userPrompt) {
 
     const { developerPrompt, model } = openaiChatConfigJson;
 
-    console.log(developerPrompt, model);
+    // console.log(userPrompt);
+    
     
     try {
 
@@ -43,6 +40,7 @@ async function generateOpenaiChatResponse(userPrompt) {
                 { role: 'developer', content: developerPrompt },
                 { role: 'user', content: userPrompt },
             ],
+            store: false,
         });
 
         console.log('Token usage:');
