@@ -101,12 +101,12 @@ startTargetingButton.addEventListener('click', async (e) => {
 async function getChatResponse(cvText, jobDescriptionText) {
 
     try {
-        const response = await fetch('/api/chat', {
+        const response = await fetch('/api/chat/targetcv', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ cvText, jobDescriptionText})
+            body: JSON.stringify({ cv: cvText, jobDescription: jobDescriptionText})
         });
 
         if(!response.ok){
