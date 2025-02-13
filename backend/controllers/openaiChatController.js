@@ -4,7 +4,8 @@ const { CvTargeter } = require('../src/utils/cvTargeter.js');
 
 async function getTargetCv(req, res) {
     const { cv, jobDescription } = {... req.body};
-    // console.log(cv, jobDescription);
+    const parsedCv = JSON.parse(cv);
+    // console.log('cv', parsedCv);
     
 
     const targetMyCv = new CvTargeter(cv, jobDescription)
@@ -14,26 +15,34 @@ async function getTargetCv(req, res) {
     
 
     try {
-        // const response = await generateOpenaiChatResponse(prompt);
+        let response = await generateOpenaiChatResponse(targetMyCv.jobAnalysisPrompt, JSON.stringify({ "job_requirements": jobDescription }), "gpt-4o", "json_object");
 
-        const response = await openai.chat.completions.create({
-            model: "gpt-4o",
-            messages: [
-                { role: 'developer', content: targetMyCv.jobAnalysisPrompt },
-                { role: 'user', content: JSON.stringify({
-                    "job_requirements": jobDescription
-                  }) },
-            ],
-            store: false,
-            response_format: { "type": "json_object" },
-        });
+        const jobRequirementsAnalysis = JSON.parse(response).analysis_result
 
-        console.log('Token usage:');
-        console.log('prompt_tokens:', response.usage.prompt_tokens);
-        console.log('completion_tokens:', response.usage.completion_tokens);
-        console.log('total_tokens:', response.usage.total_tokens);
+        // console.log(jobRequirementsAnalysis);
 
-        console.log(response.choices[0].message.content);
+        const resumeAdaptationUserPrompt = {};
+        resumeAdaptationUserPrompt.original_resume = {
+            "header": {
+              "title": parsedCv["1"],
+            },
+            "summary": parsedCv["SUMMARY"],
+            "technical_skills": parsedCv["TECHNICAL SKILLS"],
+            "technical_projects": parsedCv["TECHNICAL PROJECTS"],
+            "experience": parsedCv["EXPERIENCE"],
+            "education": parsedCv["EDUCATION"],
+            "languages": parsedCv["LANGUAGES"]
+          };
+
+        resumeAdaptationUserPrompt.job_requirements = jobRequirementsAnalysis;
+
+        // console.log('resumeAdaptationUserPrompt:', resumeAdaptationUserPrompt);
+
+
+        response = await generateOpenaiChatResponse(targetMyCv.resumeAdaptationPrompt, JSON.stringify(resumeAdaptationUserPrompt), "gpt-4o", "json_object");
+
+        console.log(JSON.parse(response));
+        
 
         return res.status(201).json({ message: "OpenAI response successfully retrieved"});
 
@@ -68,14 +77,15 @@ async function getOpenaiResponseFromPrompt(req, res) {
   };
 
 
-async function generateOpenaiChatResponse(userPrompt) {
+async function generateOpenaiChatResponse(developerPrompt, userPrompt, model="gpt-4o", responseFormatType="text") {
 
-    const { developerPrompt, model } = openaiChatConfigJson;
-
-    // console.log(userPrompt);
-    
+    if(typeof developerPrompt !== "string" || typeof userPrompt !== "string"){
+        throw new Error ("Developer prompt and user prompt must be type of string");
+    }
     
     try {
+
+        console.log('Sending request to the OpenAI API');
 
         const response = await openai.chat.completions.create({
             model,
@@ -84,6 +94,7 @@ async function generateOpenaiChatResponse(userPrompt) {
                 { role: 'user', content: userPrompt },
             ],
             store: false,
+            response_format: { "type": responseFormatType },
         });
 
         console.log('Token usage:');

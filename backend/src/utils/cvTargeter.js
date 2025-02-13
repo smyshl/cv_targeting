@@ -19,6 +19,8 @@ ${JSON.stringify({
 
 Instructions:
 1. Analyze the job requirements carefully to identify:
+   - The formal job title as stated in the requirements 
+   - The actual job title that most accurately matches requirements
    - Must-have technical skills and technologies
    - Required experience levels and types
    - Educational requirements
@@ -35,6 +37,10 @@ Instructions:
 Please provide output in the following JSON format:
 ${JSON.stringify({
   "analysis_result": {
+    "job_title": {
+      "stated": "",
+      "actual": ""
+    },
     "essential_requirements": {
       "technical_skills": [],
       "experience": [],
@@ -56,27 +62,30 @@ ${JSON.stringify({
       return this._jobAnalysisPrompt;
     }
 
-    async analyseJobRequirements(aiRequestFunction){
-      this.jobAnalysisResult = await aiRequestFunction(this._jobAnalysisPrompt);
-      return this.jobAnalysisResult;
-    }
-    
-}
 
-const jobAnalysisPrompt = `You are an expert ATS (Applicant Tracking System) analyzer. Your task is to analyze job requirements and extract key information that will be crucial for resume optimization.
+    set resumeAdaptationPrompt(qwer) {
+      // console.log('jobDescription', qwer);
+      
+        return this._resumeAdaptationPrompt = `You are an expert ATS resume optimizer. Your task is to adapt the provided resume to match job requirements while maintaining truthfulness and authenticity of the original resume.
 
 Input format:
 ${JSON.stringify({
-  "job_requirements": "full text of job requirements"
-}, null, 2)}
-
-Instructions:
-1. Analyze the job requirements carefully to identify...
-[остальные инструкции]
-
-Please provide output in the following JSON format:
-${JSON.stringify({
-  "analysis_result": {
+  "original_resume": {
+    "header": {
+      "title": "1",
+    },
+    "summary": "SUMMARY",
+    "technical_skills": "TECHNICAL SKILLS",
+    "technical_projects": "TECHNICAL PROJECTS",
+    "experience": "EXPERIENCE",
+    "education": "EDUCATION",
+    "languages": "LANGUAGES"
+  },
+  "job_requirements": {
+    "job_title": {
+      "stated": "",
+      "actual": ""
+    },
     "essential_requirements": {
       "technical_skills": [],
       "experience": [],
@@ -91,22 +100,41 @@ ${JSON.stringify({
     "industry_specific_terms": []
   }
 }, null, 2)}
-`;
 
+Instructions:
+1. Analyze both the resume and job requirements
+2. For each section of the resume:
+   - Align terminology with job requirements where appropriate
+   - Emphasize relevant skills and experiences
+   - Maintain the original meaning and truthfulness
+   - Do not add skills or experiences not present in the original
 
-const resumeAdaptationPrompt = `You are an expert ATS resume optimizer...
+3. Matching rules:
+   - Aim for 75-80% keyword match with job requirements
+   - Prioritize matching high-priority keywords
+   - Use exact phrases from job requirements when they match existing skills
+   - Keep modifications minimal but effective
 
-Input format:
-${JSON.stringify({
-  "original_resume": "// JSON structure of the resume",
-  "job_analysis": "// Analysis results from previous step"
-}, null, 2)}
+4. Special attention:
+   - Technical skills: Use exact terminology from job requirements when matching
+   - Experience: Emphasize relevant responsibilities and achievements
+   - Summary: Align with key job requirements while maintaining authenticity
 
-[инструкции]
+Output must be in the exact same JSON structure as the input resume with an additional matching_metrics section.
 
 Output format:
 ${JSON.stringify({
-  "modified_resume": "// Same structure as input resume",
+  "modified_resume": {
+    "header": {
+      "title": "",
+    },
+    "summary": "",
+    "technical_skills": "",
+    "technical_projects": "",
+    "experience": "",
+    "education": "",
+    "languages": ""
+  },
   "matching_metrics": {
     "overall_match_percentage": 0,
     "matched_keywords": {
@@ -115,10 +143,31 @@ ${JSON.stringify({
       "experience": []
     },
     "missing_requirements": [],
-    "modifications_made": []
+    "modifications_made": [
+      {
+        "section": "",
+        "original_text": "",
+        "modified_text": "",
+        "reason": ""
+      }
+    ]
   }
 }, null, 2)}
 `;
+    }
+
+    get resumeAdaptationPrompt(){
+      return this._resumeAdaptationPrompt;
+    }
+
+
+
+    async analyseJobRequirements(aiRequestFunction){
+      this.jobAnalysisResult = await aiRequestFunction(this._jobAnalysisPrompt);
+      return this.jobAnalysisResult;
+    }
+    
+}
 
 
 module.exports = {

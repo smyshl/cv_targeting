@@ -7,7 +7,7 @@ const routes = require('../routes');
 
 
 const app = express();
-const PORT = getEnvVariable('PORT') || 5000;
+const PORT = getEnvVariable('PORT') || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
